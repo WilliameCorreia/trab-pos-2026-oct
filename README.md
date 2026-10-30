@@ -13,7 +13,7 @@ Construída para a disciplina *Arquitetura de Microsserviços e Escalabilidade* 
 | Entender a arquitetura | [Arquitetura](#arquitetura) e [`docs/arquitetura.md`](docs/arquitetura.md) |
 | Ver as decisões | [`docs/ADR-001.md`](docs/ADR-001.md) … [`docs/ADR-012.md`](docs/ADR-012.md) |
 | Ver SLOs e testes de carga | [`docs/slos.md`](docs/slos.md) e [`docs/resultados-carga.md`](docs/resultados-carga.md) |
-| Apresentar | [Roteiro da demonstração](#roteiro-da-demonstração) |
+| Apresentar | [`docs/roteiro-apresentacao.md`](docs/roteiro-apresentacao.md) (quem fala o quê) e [Roteiro da demonstração](#roteiro-da-demonstração) |
 
 ## Membros do grupo
 
