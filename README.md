@@ -166,6 +166,11 @@ Em qualquer workspace ou assemblagem, o link **logs desta compilação no Grafan
 
 ## Arquitetura
 
+![Arquitetura: navegador e bff; source-lb com 2 réplicas do source-service; workspace-service e assemblage-service, cada um com seu Postgres; RabbitMQ com as filas de pedido e de evento; compila-worker e assembla-worker; blob-lb com 2 réplicas do blob-service; observabilidade com alloy, loki e grafana](docs/img/arquitetura.png)
+
+<details>
+<summary>Mesma topologia em texto</summary>
+
 ```
 navegador → bff ─┬→ source-lb (nginx) → source-service ×2 → postgres-sources
                  ├→ workspace-service → postgres-workspaces
@@ -177,6 +182,8 @@ assemblage-service ── fila assembla ──→ assembla-worker ── evento 
 
 logs: todos os containers → alloy → loki → grafana
 ```
+
+</details>
 
 Cada serviço tem o próprio banco Postgres e só acessa os dados dos outros pela API. A seção 3 de [`docs/arquitetura.md`](docs/arquitetura.md) tem os diagramas completos.
 
