@@ -190,6 +190,7 @@ Todas as chamadas a source e blob passam pelos load balancers, nunca por uma ré
 - Revisões são **imutáveis**: salvar sempre cria REV n+1. Um workspace fixa revisões; alterar os arquivos o volta para `rascunho` e descarta o objeto antigo.
 - Uma assemblagem guarda a **foto** dos objetos (blob ids) no momento do pedido.
 - Bancos sem volume persistente (ambiente de disciplina): `docker compose down` zera os dados.
+- **Consistência:** forte dentro de cada serviço (uma transação no próprio banco; a numeração de revisões é atômica) e **eventual** entre serviços: o workspace fica `na_fila` até o evento de resultado chegar. Na partição de rede, o sistema prefere continuar respondendo (AP, no sentido do CAP) e mostra o estado pendente; sem partição, prefere latência baixa a esperar o resultado (EL, no PACELC), porque compilar é assíncrono.
 
 ## 7. Requisitos não funcionais e SLOs
 
@@ -261,6 +262,9 @@ Testes práticos:
 - **Rolling update** para source, blob, workspace, assemblage e workers: subir instância nova, esperar `/health/ready`, retirar a antiga. O LB já ignora réplicas fora do ar; mensagens em processamento sem `ack` voltam para a fila.
 - **Canary** para o BFF quando houver mudança de interface: uma fração do tráfego para a versão nova (peso no nginx), observando a taxa de erro no Grafana.
 - Mudanças de banco e de formato de mensagem sempre **aditivas** (expand/contract), para que versões antiga e nova convivam durante o rolling update.
+- **Blue/Green** foi descartado: exigiria duplicar os 20 containers (bancos, RabbitMQ e observabilidade inclusos) para trocar tudo de uma vez, um custo alto para o ganho neste sistema; o rolling update com health check já evita parada.
+
+**Padrões de migração das aulas que não se aplicam:** o sistema nasceu dividido, sem um monolito legado. Por isso não há **Strangler Fig** (substituir um legado aos poucos) nem **Anti-Corruption Layer** (traduzir o modelo de um sistema antigo). **CDC** (Debezium) também não é usado: os eventos são publicados pelo próprio worker na fila, sem ler o log do banco.
 
 **Evolução dos dados (Database Decomposition):** o projeto começou na **Fase 2** (um Postgres, schema por serviço; e as tabelas estavam caindo no `public` por engano) e evoluiu para a **Fase 3** (um banco por serviço). Ver [ADR-005](ADR-005.md) → [ADR-006](ADR-006.md).
 
